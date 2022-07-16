@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEditor.UI;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 public class DiceRoll : MonoBehaviour
 {
@@ -110,6 +112,13 @@ public class DiceRoll : MonoBehaviour
         isBobbing = false;
         innerObject.transform.localPosition = staringPosition;
     }
+    private Vector3[] rotationVectors =
+    {
+        new Vector3(-1, 0, 0), // right
+        new Vector3(0, 0, 1), // down
+        new Vector3(1, 0, 0), // left
+        new Vector3(0, 0, -1), // up
+    };
 
     //  0, 1, 2, 3, => right down left up
     IEnumerator RotateOnMoveCoro(int direction)
@@ -119,53 +128,22 @@ public class DiceRoll : MonoBehaviour
 
         isRotating = true;
         var currentAnimationTime = 0.0f;
-        var startingRotation = innerObject.transform.localRotation;
+        var startingRotation = innerObject.transform.rotation;
         var e = startingRotation.eulerAngles;
+
+        var rotateVector = rotationVectors[direction];
         
         while (currentAnimationTime < 1.0)
         {
-            var newRotation = startingRotation;
-            switch (direction)
-            {
-                case 0:  // right
-                    innerObject.transform.eulerAngles = new Vector3(e.x - currentAnimationTime * 90f, e.y, e.z);
-                    break;
-                
-                case 1:  // down
-                    innerObject.transform.eulerAngles = new Vector3(e.x, e.y, e.z + currentAnimationTime * 90f);
-                    break;
-                
-                case 2:  // left
-                    innerObject.transform.eulerAngles = new Vector3(e.x + currentAnimationTime * 90f, e.y, e.z);
-                    break;
-                
-                case 3:  // up
-                    innerObject.transform.eulerAngles = new Vector3(e.x, e.y, e.z - currentAnimationTime * 90f);
-                    break;
-            }
-            
+            var newRotation = Quaternion.Euler(rotateVector * (currentAnimationTime * 90.0f)) * startingRotation;
+            innerObject.transform.rotation = newRotation;
             yield return null;
             currentAnimationTime += Time.deltaTime / travelTime;
         }
         
-            switch (direction)
-            {
-                case 0:  // right
-                    innerObject.transform.eulerAngles = new Vector3(e.x - 90f, e.y, e.z);
-                    break;
-                
-                case 1:  // down
-                    innerObject.transform.eulerAngles = new Vector3(e.x, e.y, e.z + 90f);
-                    break;
-                
-                case 2:  // left
-                    innerObject.transform.eulerAngles = new Vector3(e.x + 90f, e.y, e.z);
-                    break;
-                
-                case 3:  // up
-                    innerObject.transform.eulerAngles = new Vector3(e.x, e.y, e.z - 90f);
-                    break;
-            }
+        var x = startingRotation * Quaternion.Euler(rotateVector * ( 90.0f));
+        innerObject.transform.rotation = x;
+        
         isRotating = false;
     }
 
