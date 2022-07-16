@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using UnityEditor.UI;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
@@ -10,7 +9,6 @@ public class DiceRoll : MonoBehaviour
 {
     public GameObject currentTarget;
     public GridLocationMarker currentGrid;
-    public Rigidbody rigidBody;
     public float travelTime = 1.0f;
     public Vector3 travelVector;
     public Vector3 targetLocation;
@@ -23,6 +21,7 @@ public class DiceRoll : MonoBehaviour
     void Start()
     {
         currentGrid = GridLocationMarker.GetGridLocationMarkerAtLocation(transform.position);
+        transform.position = currentGrid.transform.position + (Vector3.up * 0.5f);
     }
 
     // Update is called once per frame
@@ -141,7 +140,7 @@ public class DiceRoll : MonoBehaviour
             currentAnimationTime += Time.deltaTime / travelTime;
         }
         
-        var x = startingRotation * Quaternion.Euler(rotateVector * ( 90.0f));
+        var x = Quaternion.Euler(rotateVector * ( 90.0f)) *startingRotation;
         innerObject.transform.rotation = x;
         
         isRotating = false;
@@ -170,7 +169,7 @@ public class DiceRoll : MonoBehaviour
         
         var targetVector = currentTarget.transform.position;
         var startingVector = gameObject.transform.position;
-        targetLocation = new Vector3(targetVector.x, startingVector.y, targetVector.z);
+        targetLocation = new Vector3(targetVector.x, targetVector.y + 0.5f, targetVector.z);
         var direction = targetLocation - startingVector;
         
         travelVector = direction.normalized * direction.magnitude / travelTime;
