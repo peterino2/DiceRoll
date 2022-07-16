@@ -22,6 +22,7 @@ public class DiceRoll : MonoBehaviour
     {
         currentGrid = GridLocationMarker.GetGridLocationMarkerAtLocation(transform.position);
         transform.position = currentGrid.transform.position + (Vector3.up * 0.5f);
+        currentGrid.occupied = true;
     }
 
     // Update is called once per frame
@@ -82,11 +83,19 @@ public class DiceRoll : MonoBehaviour
         if (currentGrid.links[dir] == null)
             return;
         
+        if (currentGrid.links[dir].occupied)
+            return;
+
+        if (currentGrid != null)
+            currentGrid.occupied = false;
+            
         isMoving = true;
         
         currentTarget = currentGrid.links[dir].gameObject;
         currentGrid = currentGrid.links[dir];
-        
+        currentGrid.occupied = true;
+        currentGrid.OnSteppedOn();
+
         StartCoroutine(MoveToTargetCoro());
         StartCoroutine(RotateOnMoveCoro(dir));
         StartCoroutine(BobOnMoveCoro());

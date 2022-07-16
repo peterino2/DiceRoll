@@ -3,20 +3,42 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public interface Activateable
+{
+    void Activate();
+}
+
+
 [ExecuteInEditMode]
 public class GridLocationMarker : MonoBehaviour
 {
     public DiceGrid masterGrid;
 
+    public bool occupied;
     public int trueIndex = 0;
     public GridLocationMarker[] links = new GridLocationMarker[4];
     public Vector3 cachedStartPosition;
+
+    public Activateable activateable;
 
     void Start()
     {
         cachedStartPosition = Vector3.zero;
         masterGrid = FindObjectOfType<DiceGrid>();
         buildLinksOnGrid();
+    }
+
+    public void LinkActivateable(Activateable _activateable)
+    {
+        activateable = _activateable;
+    }
+
+    public void OnSteppedOn()
+    {
+        if (activateable != null)
+        {
+            activateable.Activate();
+        }
     }
     
     // Update is called once per frame
