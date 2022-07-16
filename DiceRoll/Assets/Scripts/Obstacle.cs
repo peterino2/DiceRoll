@@ -32,7 +32,7 @@ public class Obstacle : MonoBehaviour, Activateable
         
     }
 
-    public void Activate()
+    public void Activate(DiceRoll player)
     {
         marker.occupied = false;
         StartCoroutine(HideAnimation());

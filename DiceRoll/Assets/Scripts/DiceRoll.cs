@@ -21,7 +21,7 @@ public class DiceRoll : MonoBehaviour
     void Start()
     {
         currentGrid = GridLocationMarker.GetGridLocationMarkerAtLocation(transform.position);
-        transform.position = currentGrid.transform.position + (Vector3.up * 0.5f);
+        transform.position = currentGrid.transform.position + (Vector3.up * 0.4f);
         currentGrid.occupied = true;
     }
 
@@ -94,7 +94,6 @@ public class DiceRoll : MonoBehaviour
         currentTarget = currentGrid.links[dir].gameObject;
         currentGrid = currentGrid.links[dir];
         currentGrid.occupied = true;
-        currentGrid.OnSteppedOn();
 
         StartCoroutine(MoveToTargetCoro());
         StartCoroutine(RotateOnMoveCoro(dir));
@@ -120,6 +119,32 @@ public class DiceRoll : MonoBehaviour
         isBobbing = false;
         innerObject.transform.localPosition = staringPosition;
     }
+    
+    private Vector3[] checkVectors =
+    {
+        Vector3.up, // 
+        Vector3.forward, // 
+        -Vector3.right, // 
+        Vector3.right, // 
+        -Vector3.forward, // 
+        Vector3.down, // 
+    };
+
+    public int checkRotationValue()
+    {
+        var currentRotation = innerObject.transform.rotation;
+        for (int i = 0; i < checkVectors.Length; i += 1)
+        {
+            var rotatedVector = currentRotation * checkVectors[i];
+            if (Vector3.Dot(rotatedVector, Vector3.up) > 0.70f)
+            {
+                return i + 1;
+            }
+        }
+
+        return -1; // this should never happen
+    }
+    
     private Vector3[] rotationVectors =
     {
         new Vector3(-1, 0, 0), // right
@@ -178,12 +203,16 @@ public class DiceRoll : MonoBehaviour
         
         var targetVector = currentTarget.transform.position;
         var startingVector = gameObject.transform.position;
-        targetLocation = new Vector3(targetVector.x, targetVector.y + 0.5f, targetVector.z);
+        targetLocation = new Vector3(targetVector.x, targetVector.y + 0.4f, targetVector.z);
         var direction = targetLocation - startingVector;
         
         travelVector = direction.normalized * direction.magnitude / travelTime;
 
         yield return new WaitUntil(() => locationReached == true);
+        
+        currentGrid.OnSteppedOn(this);
+        
+        Debug.Log("current side up: " + checkRotationValue());
         
         travelVector = Vector3.zero;
         isMoving = false;

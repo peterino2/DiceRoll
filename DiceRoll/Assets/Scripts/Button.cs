@@ -5,6 +5,10 @@ using UnityEngine;
 public class Button : MonoBehaviour, Activateable
 {
     public Obstacle activationTarget;
+
+    public bool ChecksFace = true;
+
+    public int FaceNeeded = 1;
     
     // Start is called before the first frame update
     void Start()
@@ -22,11 +26,17 @@ public class Button : MonoBehaviour, Activateable
         
     }
 
-    public void Activate()
+    public void Activate(DiceRoll player)
     {
         if (activationTarget != null)
         {
-            activationTarget.Activate();
+            if (ChecksFace)
+            {
+                if (player.checkRotationValue() != FaceNeeded)
+                    return;
+            }
+            
+            activationTarget.Activate(player);
         }
     }
 }

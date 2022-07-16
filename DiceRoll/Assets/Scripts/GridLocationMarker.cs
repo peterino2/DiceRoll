@@ -5,7 +5,7 @@ using UnityEngine;
 
 public interface Activateable
 {
-    void Activate();
+    void Activate(DiceRoll player);
 }
 
 
@@ -33,11 +33,11 @@ public class GridLocationMarker : MonoBehaviour
         activateable = _activateable;
     }
 
-    public void OnSteppedOn()
+    public void OnSteppedOn(DiceRoll player)
     {
         if (activateable != null)
         {
-            activateable.Activate();
+            activateable.Activate(player);
         }
     }
     
