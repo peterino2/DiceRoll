@@ -13,23 +13,34 @@ public class DiceRoll : MonoBehaviour
     public Vector3 travelVector;
     public Vector3 targetLocation;
     public AnimationCurve upDownCurve;
+    public AnimationCurve breakImpulseCurve;
     public GameObject innerObject;
     public float bobHeight;
     public bool locationReached;
+    public bool bCanDash;
+    public List<string> Abilities;
+
+    public bool bIsAimingAbility = false;
             
+    
+    int currentFace = 1;
+    
+    private int dir = 0;
+    private bool bMovePressed = false;
     // Start is called before the first frame update
     void Start()
     {
         currentGrid = GridLocationMarker.GetGridLocationMarkerAtLocation(transform.position);
         transform.position = currentGrid.transform.position + (Vector3.up * 0.4f);
         currentGrid.occupied = true;
+        currentFace = checkRotationValue();
     }
 
     // Update is called once per frame
     void Update()
     {
-        bool bMovePressed = false;
-        int dir = 0;
+        bMovePressed = false;
+        dir = 0;
         if (Input.GetKeyDown(KeyCode.D))
         {
             bMovePressed = true;
@@ -54,6 +65,17 @@ public class DiceRoll : MonoBehaviour
             dir = 3;
         }
 
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if(Abilities.Contains("dash") && currentFace  == 2)
+                bIsAimingAbility = true;
+            
+            if(Abilities.Contains("break") && currentFace  == 3)
+                bIsAimingAbility = true;
+        }
+        
+        TickAbilityAim();
+        
         if (bMovePressed)
         {
             if (currentGrid != null)
@@ -70,20 +92,85 @@ public class DiceRoll : MonoBehaviour
         TickTravel();
     }
 
-    private bool isRotating = false;
-    private bool isMoving = false;
-    private bool isBobbing = false;
+    void TickAbilityAim()
+    {
+        if (!bIsAimingAbility)
+            return;
+
+        if (bMovePressed)
+        {
+            bIsAimingAbility = false;
+            bMovePressed = false;
+            if (currentFace == 2)
+            {
+                DashOver(dir);
+            }
+            
+            if (currentFace == 3)
+            {
+                BreakDown(dir);
+            }
+        }
+    }
+
+    public void BreakDown(int _dir)
+    {
+        if (!Abilities.Contains("break"))
+            return;
+        
+        if (isMoving)
+            return;
+
+        if (currentGrid.links[_dir] == null)
+            return;
+
+        if (currentGrid.links[_dir].activateable == null)
+            return;
+
+        currentGrid.links[_dir].activateable.Activate(this);
+        
+        StartCoroutine(BreakDownCoro(_dir));
+    }
+
+    private Vector3[] checkOffset =
+    {
+        new Vector3(0, 0, -1), // right
+        new Vector3(-1, 0, 0), // down
+        new Vector3(0, 0, 1), // left
+        new Vector3(1, 0, 0), // up
+    };
+    
+    public float breakTime = 0.3f;
+    
+    IEnumerator BreakDownCoro(int _dir)
+    {
+        float currentAnimationTime = 0;
+        var startPosition = innerObject.transform.position;
+        while (currentAnimationTime < 1.0f)
+        {
+            float breakAnimFloat = breakImpulseCurve.Evaluate(currentAnimationTime);
+            innerObject.transform.position = startPosition + (checkOffset[_dir] * breakAnimFloat);
+            
+            yield return null;
+            currentAnimationTime += Time.deltaTime / breakTime;
+        }
+    }
+    
+    
+    public bool isRotating = false;
+    public bool isMoving = false;
+    public bool isBobbing = false;
     
 
-    void MoveToTargetPosition(int dir)
+    void MoveToTargetPosition(int moveDir)
     {
         if (isMoving)
             return;
 
-        if (currentGrid.links[dir] == null)
+        if (currentGrid.links[moveDir] == null)
             return;
         
-        if (currentGrid.links[dir].occupied)
+        if (currentGrid.links[moveDir].occupied)
             return;
 
         if (currentGrid != null)
@@ -91,21 +178,22 @@ public class DiceRoll : MonoBehaviour
             
         isMoving = true;
         
-        currentTarget = currentGrid.links[dir].gameObject;
-        currentGrid = currentGrid.links[dir];
-        currentGrid.occupied = true;
+        PrepareMove(currentGrid.links[moveDir]);
 
         StartCoroutine(MoveToTargetCoro());
-        StartCoroutine(RotateOnMoveCoro(dir));
+        StartCoroutine(RotateOnMoveCoro(moveDir));
         StartCoroutine(BobOnMoveCoro());
+    }
+
+    public void PrepareMove(GridLocationMarker marker)
+    {
+        currentTarget = marker.gameObject;
+        currentGrid = marker;
+        currentGrid.occupied = true;
     }
 
     IEnumerator BobOnMoveCoro()
     {
-        if (isBobbing)
-            yield break;
-
-        isBobbing = true;
         var currentAnimationTime = 0.0f;
         var staringPosition = innerObject.transform.localPosition;
         while (currentAnimationTime < 1.0)
@@ -153,13 +241,33 @@ public class DiceRoll : MonoBehaviour
         new Vector3(0, 0, -1), // up
     };
 
+    void DashOver(int dir)
+    {
+        if (isMoving)
+            return;
+
+        if (currentGrid.links[dir] == null)
+            return;
+
+        if (currentGrid.links[dir].links[dir] == null)
+            return;
+        
+        if (currentGrid.links[dir].links[dir].occupied)
+            return;
+
+        if (currentGrid != null)
+            currentGrid.occupied = false;
+        
+        PrepareMove(currentGrid.links[dir].links[dir]);
+        
+        StartCoroutine(MoveToTargetCoro());
+        StartCoroutine(RotateOnMoveCoro(dir));
+        StartCoroutine(BobOnMoveCoro());
+    }
+
     //  0, 1, 2, 3, => right down left up
     IEnumerator RotateOnMoveCoro(int direction)
     {
-        if (isRotating)
-            yield break;
-
-        isRotating = true;
         var currentAnimationTime = 0.0f;
         var startingRotation = innerObject.transform.rotation;
         var e = startingRotation.eulerAngles;
@@ -211,8 +319,9 @@ public class DiceRoll : MonoBehaviour
         yield return new WaitUntil(() => locationReached == true);
         
         currentGrid.OnSteppedOn(this);
+        currentFace = checkRotationValue();
         
-        Debug.Log("current side up: " + checkRotationValue());
+        Debug.Log("current side up: " + currentFace);
         
         travelVector = Vector3.zero;
         isMoving = false;
