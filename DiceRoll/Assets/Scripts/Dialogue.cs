@@ -16,6 +16,8 @@ public class Dialogue : MonoBehaviour
     [SerializeField] private AudioSource _audioSource;
     [SerializeField] private float _typeSpeed = 0.1f;
     [SerializeField] private Camera _camera;
+    public string[] dialogueSet;
+    public int currentDialogueIndex = 0;
 
     public AudioClip[] keyStrokeList;
     private void Start()
@@ -34,13 +36,16 @@ public class Dialogue : MonoBehaviour
          }
      }
      
-     public void DialogShow(DiceRoll _player, string dialog, bool endgame)
+     public void DialogShow(string[] newDialogSet)
      {
          if (!inDialogue)
-             StartCoroutine(DisplayText(dialog, endgame));
+         {
+             dialogueSet = newDialogSet;
+             StartCoroutine(DisplayText());
+         }
      } 
      
-     IEnumerator DisplayText(string dialog, bool endgame)
+     IEnumerator DisplayText()
      {
          if (inDialogue)
              yield break;
@@ -48,45 +53,59 @@ public class Dialogue : MonoBehaviour
          inDialogue = true;
          player.bInDialogue = true; 
 
-         int i = 0;
          text.gameObject.SetActive(true);
          text.text = null;
 
-         string str = dialog; // _dialogs[currStringSelection];
+         currentDialogueIndex = 0;
+         string str = dialogueSet[0]; // _dialogs[currStringSelection];
          int lastaudioId = 0;
-
-         while (i < str.Length)
+         while (currentDialogueIndex < dialogueSet.Length)
          {
-             if (Input.GetKey(KeyCode.Space) && i > 1 && canSkip)
+             
+             str = dialogueSet[currentDialogueIndex];
+             pressSpace.gameObject.SetActive(false);
+             int i = 0;
+            
+             text.text = "";
+             
+             while (i < str.Length)
              {
-                 text.text = str;
-                 break;
+                 if (Input.GetKey(KeyCode.Space) && i > 1 && canSkip)
+                 {
+                     text.text = str;
+                     break;
+                 }
+
+                 //text.text += originalText[i];
+                 text.text += str[i];
+                 int rand = Random.Range(0, keyStrokeList.Length - 1);
+                 if (rand == lastaudioId)
+                 {
+                     rand = rand + 1 % keyStrokeList.Length;
+                 }
+
+                 lastaudioId = rand;
+                 _audioSource.clip = keyStrokeList[rand];
+                 _audioSource.Play();
+                 yield return new WaitForSeconds(_typeSpeed);
+                 ++i;
              }
 
-             //text.text += originalText[i];
-             text.text += str[i];
-             int rand = Random.Range(0, keyStrokeList.Length - 1);
-             if (rand == lastaudioId)
+             yield return new WaitForSeconds(0.1f);
+             
+             pressSpace.gameObject.SetActive(true);
+             while (true)
              {
-                 rand = rand + 1 % keyStrokeList.Length;
+                 yield return null;
+                 if (Input.GetKey(KeyCode.Space) && canSkip) { break; }
              }
 
-             lastaudioId = rand;
-             _audioSource.clip = keyStrokeList[rand];
-             _audioSource.Play();
-             yield return new WaitForSeconds(_typeSpeed);
-             ++i;
+             yield return new WaitForSeconds(0.1f);
+             currentDialogueIndex += 1;
+             //currStringSelection++;
+             //if (currStringSelection >= _dialogs.Length) { currStringSelection = _dialogs.Length - 1; }
          }
-         
-         //currStringSelection++;
-         //if (currStringSelection >= _dialogs.Length) { currStringSelection = _dialogs.Length - 1; }
 
-         pressSpace.gameObject.SetActive(true);
-         while (true)
-         {
-             yield return null;
-             if (Input.GetKey(KeyCode.Space) && canSkip) { break; }
-         }
 
          text.gameObject.SetActive(false);
          pressSpace.gameObject.SetActive(false);

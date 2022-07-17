@@ -69,7 +69,10 @@ public class DiceRoll : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.F))
         {
-            FindObjectOfType<Dialogue>().DialogShow(this, "Hello wanker", false);
+            FindObjectOfType<Dialogue>().DialogShow(new string[] {
+                "Hello wanker.",
+                "I fucked your mom",
+            });
         }
 
         if (Input.GetKeyDown(KeyCode.Space))
