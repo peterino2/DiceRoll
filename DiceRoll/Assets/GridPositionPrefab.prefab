@@ -47,13 +47,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   masterGrid: {fileID: 0}
+  occupied: 0
   trueIndex: 0
   links:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  cachedStartPosition: {x: 0, y: -0.28, z: -4}
+  cachedStartPosition: {x: 2.01, y: -0.5, z: -1}
 --- !u!1 &5049461936473479900
 GameObject:
   m_ObjectHideFlags: 0
@@ -114,7 +115,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a51e477ff0cd649429819ed873d92b20, type: 2}
+  - {fileID: 2100000, guid: 0bdaef2c91c33df44a9c0b481edeff1e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
