@@ -2,12 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Random = UnityEngine.Random;
 
 public class Obstacle : MonoBehaviour, Activateable
 {
     public GridLocationMarker marker;
 
     private bool obstacleDisabled = false;
+
+    [SerializeField] private AudioClip[] clips;
+    [SerializeField] private AudioSource audioSource;
     // Start is called before the first frame update
     void Start()
     {
@@ -44,6 +48,12 @@ public class Obstacle : MonoBehaviour, Activateable
             yield break;
         
         obstacleDisabled = true;
+
+        if (clips.Length > 0)
+        {
+            audioSource.clip = (clips[Random.Range(0, clips.Length - 1)]);
+            audioSource.Play();
+        }
         
         var animationTime = 0.0f;
         while (animationTime < 1.0f)
