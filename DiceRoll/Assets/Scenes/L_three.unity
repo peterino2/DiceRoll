@@ -218,7 +218,7 @@ MonoBehaviour:
   - row:
     - 3 is a strong number!
     - With it you can BREAK down barriers!
-    - Press Space when you're showing your 3
+    - Press SPACE when you're showing your 3
   dialogueSystem: {fileID: 0}
   player: {fileID: 0}
 --- !u!4 &37091546
