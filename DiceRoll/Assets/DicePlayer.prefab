@@ -149,6 +149,7 @@ MonoBehaviour:
   movementClips:
   - {fileID: 8300000, guid: 635b644ea1427c448921b06553c947a9, type: 3}
   - {fileID: 8300000, guid: 9f448c254376aea46b62a0d0beaf18b0, type: 3}
+  breakClip: {fileID: 8300000, guid: 271a10bdd56331d45ac0aa5ca04adca2, type: 3}
   spotlight: {fileID: 4859981170839110695}
   bIsAimingAbility: 0
   breakTime: 0.3

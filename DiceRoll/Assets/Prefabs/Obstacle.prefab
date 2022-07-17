@@ -111,7 +111,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   marker: {fileID: 0}
   clips:
-  - {fileID: 8300000, guid: 271a10bdd56331d45ac0aa5ca04adca2, type: 3}
   - {fileID: 8300000, guid: 2aa0a9891a57c3746874050dec3e55f4, type: 3}
   - {fileID: 8300000, guid: 840c03f1d550ec448b1c161718ba5d2e, type: 3}
   audioSource: {fileID: 3117182666291931378}

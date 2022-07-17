@@ -23,6 +23,7 @@ public class DiceRoll : MonoBehaviour
     public GameObject[] ghosts;
     public AudioSource source;
     public AudioClip[] movementClips;
+    public AudioClip breakClip;
 
     public GameObject spotlight;
     
@@ -217,6 +218,8 @@ public class DiceRoll : MonoBehaviour
     {
         float currentAnimationTime = 0;
         var startPosition = innerObject.transform.position;
+        source.clip = breakClip;
+        source.Play();
         while (currentAnimationTime < 1.0f)
         {
             float breakAnimFloat = breakImpulseCurve.Evaluate(currentAnimationTime);
