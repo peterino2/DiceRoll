@@ -27,7 +27,7 @@ public class DialogueTrigger : MonoBehaviour, Activateable
         
     }
 
-    public void Activate(DiceRoll player)
+    public void Activate(DiceRoll _player)
     {
         if (dialogueShown && bTriggerOnce)
             return;
