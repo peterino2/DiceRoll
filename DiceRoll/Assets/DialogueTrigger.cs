@@ -10,6 +10,7 @@ public class DialogueTrigger : MonoBehaviour, Activateable
     public string[] dialogueSet;
     public bool dialogueShown = false;
     public bool bTriggerOnce = true;
+    public bool stopMusic = false;
 
     // Start is called before the first frame update
     void Start()
@@ -33,5 +34,13 @@ public class DialogueTrigger : MonoBehaviour, Activateable
             return;
         FindObjectOfType<Dialogue>().DialogShow(dialogueSet);
         dialogueShown = true;
+        if (stopMusic)
+        {
+            var music = FindObjectOfType<MusicPlayer>();
+            if (music != null)
+            {
+                music.source.Stop();
+            }
+        }
     }
 }

@@ -56,7 +56,7 @@ public class GridLocationMarker : MonoBehaviour
 
     public static GridLocationMarker GetGridLocationMarkerAtLocation(Vector3 location)
     {
-        Ray checkRay = new Ray(location + new Vector3(0, 3, 0), Vector3.down);
+        Ray checkRay = new Ray(location + new Vector3(0, 300, 0), Vector3.down);
         RaycastHit hit;
         if (Physics.Raycast(checkRay.origin, checkRay.direction, out hit, Mathf.Infinity, 1 << 6))
         {
@@ -84,7 +84,7 @@ public class GridLocationMarker : MonoBehaviour
         cachedStartPosition = startingPosition;
         for (int i = 0; i < 4; i += 1)
         {
-            Ray checkRay = new Ray(startingPosition + checkOffset[i] + new Vector3(0, 3, 0), Vector3.down * 1000);
+            Ray checkRay = new Ray(startingPosition + checkOffset[i] + new Vector3(0, 300, 0), Vector3.down * 1000);
             RaycastHit hit;
             
             Debug.DrawRay(checkRay.origin, checkRay.direction*1000, Color.cyan);
