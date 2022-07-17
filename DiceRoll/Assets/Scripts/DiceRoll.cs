@@ -19,12 +19,11 @@ public class DiceRoll : MonoBehaviour
     public bool locationReached;
     public List<string> Abilities;
     public bool bInDialogue;
-    private Dialogue dialogueRef;
 
     public bool bIsAimingAbility = false;
             
     int currentFace = 1;
-    
+
     private int dir = 0;
     private bool bMovePressed = false;
     // Start is called before the first frame update
@@ -65,14 +64,6 @@ public class DiceRoll : MonoBehaviour
         {
             bMovePressed = true;
             dir = 3;
-        }
-        
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            FindObjectOfType<Dialogue>().DialogShow(new string[] {
-                "Hello wanker.",
-                "I fucked your mom",
-            });
         }
 
         if (Input.GetKeyDown(KeyCode.Space))

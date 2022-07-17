@@ -20,11 +20,16 @@ public class Dialogue : MonoBehaviour
     public int currentDialogueIndex = 0;
 
     public AudioClip[] keyStrokeList;
-    private void Start()
+
+    private void Awake()
     {
        player = FindObjectOfType<DiceRoll>();
        _camera = FindObjectOfType<Camera>();
        _audioSource = _camera.gameObject.GetComponentInChildren<AudioSource>();
+    }
+
+    private void Start()
+    {
        text.gameObject.SetActive(false);
        pressSpace.gameObject.SetActive(false);
     }
@@ -84,9 +89,12 @@ public class Dialogue : MonoBehaviour
                      rand = rand + 1 % keyStrokeList.Length;
                  }
 
-                 lastaudioId = rand;
-                 _audioSource.clip = keyStrokeList[rand];
-                 _audioSource.Play();
+                 if (i % 2 == 0)
+                 {
+                     lastaudioId = rand;
+                     _audioSource.clip = keyStrokeList[rand];
+                     _audioSource.Play();
+                 }
                  yield return new WaitForSeconds(_typeSpeed);
                  ++i;
              }
@@ -94,14 +102,16 @@ public class Dialogue : MonoBehaviour
              yield return new WaitForSeconds(0.1f);
              
              pressSpace.gameObject.SetActive(true);
+             var timeout = 2.0f;
+             currentDialogueIndex += 1;
              while (true)
              {
                  yield return null;
-                 if (Input.GetKey(KeyCode.Space) && canSkip) { break; }
+                 timeout -= Time.deltaTime;
+                 if (( (timeout < 0 && currentDialogueIndex < dialogueSet.Length ) || Input.GetKey(KeyCode.Space) ) && canSkip) { break; }
              }
 
              yield return new WaitForSeconds(0.1f);
-             currentDialogueIndex += 1;
              //currStringSelection++;
              //if (currStringSelection >= _dialogs.Length) { currStringSelection = _dialogs.Length - 1; }
          }
