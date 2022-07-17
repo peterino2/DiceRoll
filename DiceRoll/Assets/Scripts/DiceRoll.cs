@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
+using Random = UnityEngine.Random;
 
 public class DiceRoll : MonoBehaviour
 {
@@ -20,6 +21,8 @@ public class DiceRoll : MonoBehaviour
     public List<string> Abilities;
     public bool bInDialogue;
     public GameObject[] ghosts;
+    public AudioSource source;
+    public AudioClip[] movementClips;
 
     public GameObject spotlight;
     
@@ -388,19 +391,22 @@ public class DiceRoll : MonoBehaviour
     IEnumerator MoveToTargetCoro()
     {
         locationReached = false;
-        
+
         var targetVector = currentTarget.transform.position;
         var startingVector = gameObject.transform.position;
         targetLocation = new Vector3(targetVector.x, targetVector.y + 0.4f, targetVector.z);
         var direction = targetLocation - startingVector;
-        
+
         travelVector = direction.normalized * direction.magnitude / travelTime;
 
         yield return new WaitUntil(() => locationReached == true);
-        
+
         currentFace = checkRotationValue();
         currentGrid.OnSteppedOn(this);
-        
+
+        source.clip = movementClips[Random.Range( 0 , movementClips.Length - 1)];
+        source.Play();
+
         UpdateGhosts();
         
         Debug.Log("current side up: " + currentFace);
