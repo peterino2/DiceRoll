@@ -5,6 +5,7 @@ using UnityEngine;
 public class MusicPlayer : MonoBehaviour
 {
     // Start is called before the first frame update
+    public AudioSource source;
     void Start()
     {
         DontDestroyOnLoad(gameObject);
