@@ -21,6 +21,8 @@ public class DiceRoll : MonoBehaviour
     public bool bInDialogue;
     public GameObject[] ghosts;
 
+    public GameObject spotlight;
+    
     public bool bIsAimingAbility = false;
             
     int currentFace = 1;
@@ -38,6 +40,7 @@ public class DiceRoll : MonoBehaviour
         {
             ghost.SetActive(false);
         }
+        spotlight.SetActive(false);
         UpdateGhosts();
     }
 
@@ -50,7 +53,7 @@ public class DiceRoll : MonoBehaviour
         
     }
 
-    void UpdateGhosts()
+    public void UpdateGhosts()
     {
         foreach(var ghost in ghosts)
         {
@@ -118,11 +121,17 @@ public class DiceRoll : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if(Abilities.Contains("dash") && currentFace  == 2)
+            if (Abilities.Contains("dash") && currentFace == 2)
+            {
                 bIsAimingAbility = true;
-            
-            if(Abilities.Contains("break") && currentFace  == 3)
+                spotlight.SetActive(true);
+            }
+
+            if (Abilities.Contains("break") && currentFace == 3)
+            {
                 bIsAimingAbility = true;
+                spotlight.SetActive(true);
+            }
         }
     }
 
@@ -157,6 +166,7 @@ public class DiceRoll : MonoBehaviour
 
         if (bMovePressed)
         {
+            spotlight.SetActive(false);
             bIsAimingAbility = false;
             bMovePressed = false;
             if (currentFace == 2)

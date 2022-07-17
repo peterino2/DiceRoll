@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Experimental.GlobalIllumination;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
@@ -122,6 +123,7 @@ public class Dialogue : MonoBehaviour
          inDialogue = false;
          canSkip = false;
          player.bInDialogue = false;
+         player.UpdateGhosts();
      }
     
 }
