@@ -66,6 +66,11 @@ public class DiceRoll : MonoBehaviour
             bMovePressed = true;
             dir = 3;
         }
+        
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            FindObjectOfType<Dialogue>().DialogShow(this, "Hello wanker", false);
+        }
 
         if (Input.GetKeyDown(KeyCode.Space))
         {

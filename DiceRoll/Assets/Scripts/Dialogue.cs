@@ -4,20 +4,27 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class Dialogue : MonoBehaviour
 {
     public TextMeshProUGUI text;
+    public TextMeshProUGUI pressSpace;
     private bool canSkip = false;
     private bool inDialogue = false;
     private DiceRoll player;
     [SerializeField] private AudioSource _audioSource;
     [SerializeField] private float _typeSpeed = 0.1f;
     [SerializeField] private Camera _camera;
+
+    public AudioClip[] keyStrokeList;
     private void Start()
     {
        player = FindObjectOfType<DiceRoll>();
        _camera = FindObjectOfType<Camera>();
+       _audioSource = _camera.gameObject.GetComponentInChildren<AudioSource>();
+       text.gameObject.SetActive(false);
+       pressSpace.gameObject.SetActive(false);
     }
      void Update()
      {
@@ -27,10 +34,8 @@ public class Dialogue : MonoBehaviour
          }
      }
      
-     public void DialogShow(DiceRoll player, string dialog, bool endgame)
+     public void DialogShow(DiceRoll _player, string dialog, bool endgame)
      {
-         this.player = player; 
-
          if (!inDialogue)
              StartCoroutine(DisplayText(dialog, endgame));
      } 
@@ -48,6 +53,7 @@ public class Dialogue : MonoBehaviour
          text.text = null;
 
          string str = dialog; // _dialogs[currStringSelection];
+         int lastaudioId = 0;
 
          while (i < str.Length)
          {
@@ -59,22 +65,31 @@ public class Dialogue : MonoBehaviour
 
              //text.text += originalText[i];
              text.text += str[i];
+             int rand = Random.Range(0, keyStrokeList.Length - 1);
+             if (rand == lastaudioId)
+             {
+                 rand = rand + 1 % keyStrokeList.Length;
+             }
+
+             lastaudioId = rand;
+             _audioSource.clip = keyStrokeList[rand];
              _audioSource.Play();
              yield return new WaitForSeconds(_typeSpeed);
              ++i;
          }
-
+         
          //currStringSelection++;
          //if (currStringSelection >= _dialogs.Length) { currStringSelection = _dialogs.Length - 1; }
-         yield return new WaitForSeconds(0.3f);
 
+         pressSpace.gameObject.SetActive(true);
          while (true)
          {
-             yield return new WaitForSeconds(0.1f);
+             yield return null;
              if (Input.GetKey(KeyCode.Space) && canSkip) { break; }
          }
 
          text.gameObject.SetActive(false);
+         pressSpace.gameObject.SetActive(false);
          inDialogue = false;
          canSkip = false;
          player.bInDialogue = false;
