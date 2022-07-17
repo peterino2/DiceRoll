@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Debug = UnityEngine.Debug;
 using Random = UnityEngine.Random;
 
@@ -24,6 +25,7 @@ public class DiceRoll : MonoBehaviour
     public AudioSource source;
     public AudioClip[] movementClips;
     public AudioClip breakClip;
+    public bool bCanReset = true;
 
     public GameObject spotlight;
     
@@ -122,6 +124,12 @@ public class DiceRoll : MonoBehaviour
             bMovePressed = true;
             dir = 3;
         }
+        
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            if(bCanReset)
+                StartCoroutine(ResetLevel());
+        }
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -137,6 +145,15 @@ public class DiceRoll : MonoBehaviour
                 spotlight.SetActive(true);
             }
         }
+    }
+
+    IEnumerator ResetLevel()
+    {
+        var d = FindObjectOfType<Dialogue>();
+        if(d)
+            d.DoFadeOut();
+        yield return new WaitForSeconds(1.0f);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     void TickAbilityDispatches()
