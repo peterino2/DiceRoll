@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Experimental.GlobalIllumination;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
@@ -19,6 +18,7 @@ public class Dialogue : MonoBehaviour
     [SerializeField] private Camera _camera;
     public string[] dialogueSet;
     public int currentDialogueIndex = 0;
+    public RawImage darkImage;
 
     public AudioClip[] keyStrokeList;
 
@@ -33,7 +33,39 @@ public class Dialogue : MonoBehaviour
     {
        text.gameObject.SetActive(false);
        pressSpace.gameObject.SetActive(false);
+       StartCoroutine(FadeIn());
     }
+
+    IEnumerator FadeOut()
+    {
+        darkImage.gameObject.SetActive(true);
+        float animTime = 0;
+        while (animTime < 1.0f)
+        {
+            darkImage.color = new Color(0, 0, 0, animTime);
+            yield return null;
+            animTime += Time.deltaTime;
+        }
+        
+    }
+    
+    IEnumerator FadeIn()
+    {
+        float animTime = 0;
+        while (animTime < 1.0f)
+        {
+            darkImage.color = new Color(0, 0, 0, 1 - animTime);
+            yield return null;
+            animTime += Time.deltaTime;
+        }
+        darkImage.gameObject.SetActive(false);
+    }
+
+    public void DoFadeOut()
+    {
+        StartCoroutine(FadeOut());
+    }
+    
      void Update()
      {
          if (!Input.GetKey(KeyCode.Space) && inDialogue)
