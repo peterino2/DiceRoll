@@ -19,6 +19,7 @@ public class DiceRoll : MonoBehaviour
     public bool locationReached;
     public List<string> Abilities;
     public bool bInDialogue;
+    public GameObject[] ghosts;
 
     public bool bIsAimingAbility = false;
             
@@ -33,6 +34,55 @@ public class DiceRoll : MonoBehaviour
         transform.position = currentGrid.transform.position + (Vector3.up * 0.4f);
         currentGrid.occupied = true;
         currentFace = checkRotationValue();
+        foreach(var ghost in ghosts)
+        {
+            ghost.SetActive(false);
+        }
+        UpdateGhosts();
+    }
+
+    void HideGhosts()
+    {
+        foreach(var ghost in ghosts)
+        {
+            ghost.SetActive(false);
+        }
+        
+    }
+
+    void UpdateGhosts()
+    {
+        foreach(var ghost in ghosts)
+        {
+            ghost.SetActive(false);
+        }
+        
+        if (currentGrid == null)
+            return;
+        
+
+        for (int _dir = 0; _dir < 4; _dir += 1)
+        {
+            var nextGrid = currentGrid.links[_dir];
+            if (nextGrid != null)
+            {
+                var currentRotation = innerObject.transform.rotation;
+                Vector3 globalCheckVector = checkOffset[_dir] * -1;
+                int ghostToShow = -1;
+                for (int i = 0; i < checkFaceVectors.Length; i += 1)
+                {
+                    var rotatedVector = currentRotation * checkFaceVectors[i];
+                    if (Vector3.Dot(rotatedVector, globalCheckVector) > 0.70f)
+                    {
+                        ghostToShow = i;
+                        break;
+                    }
+                }
+
+                ghosts[ghostToShow].SetActive(true);
+                ghosts[ghostToShow].transform.position = nextGrid.GetTargetLocation() - (Vector3.up * 0.4f);
+            }
+        }
     }
 
     void TickInputs()
@@ -209,6 +259,7 @@ public class DiceRoll : MonoBehaviour
         currentTarget = marker.gameObject;
         currentGrid = marker;
         currentGrid.occupied = true;
+        HideGhosts();
     }
 
     IEnumerator BobOnMoveCoro()
@@ -227,7 +278,7 @@ public class DiceRoll : MonoBehaviour
         innerObject.transform.localPosition = staringPosition;
     }
     
-    private Vector3[] checkVectors =
+    private Vector3[] checkFaceVectors =
     {
         Vector3.up, // 
         Vector3.forward, // 
@@ -240,9 +291,9 @@ public class DiceRoll : MonoBehaviour
     public int checkRotationValue()
     {
         var currentRotation = innerObject.transform.rotation;
-        for (int i = 0; i < checkVectors.Length; i += 1)
+        for (int i = 0; i < checkFaceVectors.Length; i += 1)
         {
-            var rotatedVector = currentRotation * checkVectors[i];
+            var rotatedVector = currentRotation * checkFaceVectors[i];
             if (Vector3.Dot(rotatedVector, Vector3.up) > 0.70f)
             {
                 return i + 1;
@@ -339,6 +390,8 @@ public class DiceRoll : MonoBehaviour
         
         currentFace = checkRotationValue();
         currentGrid.OnSteppedOn(this);
+        
+        UpdateGhosts();
         
         Debug.Log("current side up: " + currentFace);
         
