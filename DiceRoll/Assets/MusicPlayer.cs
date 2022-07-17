@@ -16,4 +16,33 @@ public class MusicPlayer : MonoBehaviour
     {
         
     }
+
+    public void SoftFadeToNewTrack(AudioClip clip)
+    {
+        StartCoroutine(SoftFadeToNewTrackCoro(clip));
+    }
+    
+    IEnumerator SoftFadeToNewTrackCoro(AudioClip clip)
+    {
+        float volume = 1.0f;
+        while (volume > 0.1)
+        {
+            source.volume -= Time.deltaTime / 0.5f;
+            volume -= Time.deltaTime / 0.5f;
+            yield return null;
+        }
+        
+        source.Stop();
+        source.clip = clip;
+        source.Play();
+
+        volume = 0.0f;
+        while (volume < 1.0f)
+        {
+            source.volume += Time.deltaTime / 0.5f;
+            volume += Time.deltaTime / 0.5f;
+            yield return null;
+        }
+        source.volume = 1.0f;
+    }
 }
