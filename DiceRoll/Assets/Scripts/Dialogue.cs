@@ -99,9 +99,9 @@ public class Dialogue : MonoBehaviour
                  ++i;
              }
 
-             yield return new WaitForSeconds(0.1f);
-             
              pressSpace.gameObject.SetActive(true);
+             yield return new WaitForSeconds(0.4f);
+             
              var timeout = 2.0f;
              currentDialogueIndex += 1;
              while (true)

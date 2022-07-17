@@ -103,4 +103,9 @@ public class GridLocationMarker : MonoBehaviour
             }
         }
     }
+
+    public Vector3 GetTargetLocation()
+    {
+        return transform.position + Vector3.up * 0.4f;
+    }
 }

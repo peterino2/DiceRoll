@@ -168,8 +168,19 @@ public class DiceRoll : MonoBehaviour
     public bool isRotating = false;
     public bool isMoving = false;
     public bool isBobbing = false;
-    
 
+
+    public void TeleportToTarget(GridLocationMarker grid)
+    {
+        if (currentGrid != null)
+            currentGrid.occupied = false;
+        
+        currentTarget = grid.gameObject;
+        currentGrid = grid;
+        currentGrid.occupied = true;
+        transform.position = grid.GetTargetLocation();
+    }
+    
     void MoveToTargetPosition(int moveDir)
     {
         if (isMoving)
@@ -326,8 +337,8 @@ public class DiceRoll : MonoBehaviour
 
         yield return new WaitUntil(() => locationReached == true);
         
-        currentGrid.OnSteppedOn(this);
         currentFace = checkRotationValue();
+        currentGrid.OnSteppedOn(this);
         
         Debug.Log("current side up: " + currentFace);
         
