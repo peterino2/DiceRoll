@@ -17,12 +17,12 @@ public class DiceRoll : MonoBehaviour
     public GameObject innerObject;
     public float bobHeight;
     public bool locationReached;
-    public bool bCanDash;
     public List<string> Abilities;
+    public bool bInDialogue;
+    private Dialogue dialogueRef;
 
     public bool bIsAimingAbility = false;
             
-    
     int currentFace = 1;
     
     private int dir = 0;
@@ -36,11 +36,13 @@ public class DiceRoll : MonoBehaviour
         currentFace = checkRotationValue();
     }
 
-    // Update is called once per frame
-    void Update()
+    void TickInputs()
     {
         bMovePressed = false;
         dir = 0;
+        if (bInDialogue)
+            return;
+        
         if (Input.GetKeyDown(KeyCode.D))
         {
             bMovePressed = true;
@@ -73,9 +75,10 @@ public class DiceRoll : MonoBehaviour
             if(Abilities.Contains("break") && currentFace  == 3)
                 bIsAimingAbility = true;
         }
-        
-        TickAbilityAim();
-        
+    }
+
+    void TickAbilityDispatches()
+    {
         if (bMovePressed)
         {
             if (currentGrid != null)
@@ -86,9 +89,15 @@ public class DiceRoll : MonoBehaviour
             {
                 Debug.Log("Can't move, bad currentGrid");
             }
-            
         }
-        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        TickInputs();
+        TickAbilityAim();
+        TickAbilityDispatches();
         TickTravel();
     }
 

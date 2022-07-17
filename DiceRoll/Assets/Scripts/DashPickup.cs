@@ -18,12 +18,6 @@ public class DashPickup : MonoBehaviour, Activateable
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public void Activate(DiceRoll player)
     {
         player.Abilities.Add(abilityToGrant);
